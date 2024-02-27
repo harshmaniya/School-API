@@ -39,11 +39,11 @@
   - if student got lt 23 marks in any subject then he will be fail
         
 **Grade**
-    - result pass and per gte 70 -  distinction
-    - result pass and per gte 60 and lt 70 -  first class
-    - result pass and per gte 50 and lt 60 -  second class
-    - result pass and per lt 50 -  pass
-    - result fail - fail
+  - result pass and per gte 70 -  distinction
+  - result pass and per gte 60 and lt 70 -  first class
+  - result pass and per gte 50 and lt 60 -  second class
+  - result pass and per lt 50 -  pass
+  - result fail - fail
 
 **API**
   - Add default roles, admin if not exists when connect to db
