@@ -1,4 +1,4 @@
-****School Management System - SMS****
+<h1>School Management System - SMS</h1>
 
 **Role**
   - rolename - admin, faculty, student
