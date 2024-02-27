@@ -34,8 +34,10 @@
   - percentage
 
 **conditions**
+
 **result**
   - if student got lt 23 marks in any subject then he will be fail
+        
 **grade**
     - result pass and per gte 70 -  distinction
     - result pass and per gte 60 and lt 70 -  first class
