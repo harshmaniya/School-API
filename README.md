@@ -1,3 +1,5 @@
+****School Management System - SMS****
+
 **Role**
   - rolename - admin, faculty, student
 
