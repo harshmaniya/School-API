@@ -2,7 +2,7 @@ const { User, Result, Topper } = require('../../models');
 const { combineResolvers } = require('graphql-resolvers');
 const { isAuthenticatedAdmin } = require('../../utils');
 
-
+// done
 const login = async (_, { input }) => {
     const { email, password } = input
     try {
@@ -22,6 +22,7 @@ const login = async (_, { input }) => {
     }
 }
 
+// done
 const getToppersBasedOnClass = combineResolvers(isAuthenticatedAdmin,
     async () => {
         try {

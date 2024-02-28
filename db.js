@@ -7,13 +7,18 @@ const mongoConnection = () => {
     mongoose.connect(MONGOOSE_URI)
         .then(async () => {
             console.log('Connected to MongoDB');
-            const isRoleExist = await Role.find({});
-
-            if (isRoleExist.length === 0) {
+            const isRoleExist = await Role.find({})
+            const rolesToInsert = ['admin', 'faculty', 'student'];
+            isRoleExist.map((data) => {
+                if (!rolesToInsert.includes(data.roleName)) {
+                    rolesToInsert.pop(data.roleName)
+                }
+            })
+            
+            if (isRoleExist.length !== 3) {
                 let isRoleCreated = true;
                 let adminRoleId;
-                const rolesToInsert = ['admin', 'faculty', 'student'];
-                
+
                 const rolePromises = rolesToInsert.map(roleName => {
                     return Role.create({ roleName })
                         .then(role => {
@@ -37,7 +42,7 @@ const mongoConnection = () => {
                         role: adminRoleId,
                         password: 'admin',
                     })
-                        .then(res => {                           
+                        .then(res => {
                             console.log("email: ", res.email, " password: admin");
                         })
                         .catch(error => {

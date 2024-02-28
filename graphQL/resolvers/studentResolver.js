@@ -69,9 +69,9 @@ const getStudent = combineResolvers(isAuthenticatedFaculty,
                     { path: 'updatedBy', select: '_id firstName role' },
                 ])
                 .populate([
-                    { path: 'createdBy.role', model: 'Role', select: 'roleName' },
-                    { path: 'updatedBy.role', model: 'Role', select: 'roleName' }
-                ]);
+                    { path: 'createdBy', populate: { path: 'role', select: 'roleName' } },
+                    { path: 'updatedBy', populate: { path: 'role', select: 'roleName' } }
+                ])
 
             if (!getStudent) return new Error("getting error in finding student")
             console.log(getStudent);
@@ -94,9 +94,9 @@ const getAllStudent = combineResolvers(isAuthenticatedFaculty,
                     { path: 'updatedBy', select: '_id firstName role' },
                 ])
                 .populate([
-                    { path: 'createdBy.role', model: 'Role', select: 'roleName' },
-                    { path: 'updatedBy.role', model: 'Role', select: 'roleName' }
-                ]);
+                    { path: 'createdBy', populate: { path: 'role', select: 'roleName' } },
+                    { path: 'updatedBy', populate: { path: 'role', select: 'roleName' } }
+                ])
             if (!getAllStudent) return new Error("getting error in finding all student")
             console.log(getAllStudent);
             return getAllStudent
@@ -118,9 +118,9 @@ const getProfile = combineResolvers(isAuthenticatedStudent,
                     { path: 'updatedBy', select: '_id firstName role' },
                 ])
                 .populate([
-                    { path: 'createdBy.role', model: 'Role', select: 'roleName' },
-                    { path: 'updatedBy.role', model: 'Role', select: 'roleName' }
-                ]);
+                    { path: 'createdBy', populate: { path: 'role', select: 'roleName' } },
+                    { path: 'updatedBy', populate: { path: 'role', select: 'roleName' } }
+                ])
             if (!getProfile) return new Error("getting error in finding profile")
             console.log(getProfile);
             return getProfile

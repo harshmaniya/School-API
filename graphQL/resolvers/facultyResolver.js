@@ -83,7 +83,7 @@ const deleteFaculty = combineResolvers(isAuthenticatedAdmin,
         }
     })
 
-// almost done
+// done
 const getFaculty = combineResolvers(isAuthenticatedAdmin,
     async (_, args) => {
         try {
@@ -109,6 +109,7 @@ const getFaculty = combineResolvers(isAuthenticatedAdmin,
         }
     })
 
+// done
 const getAllFaculty = combineResolvers(isAuthenticatedAdmin,
     async () => {
         try {
@@ -118,8 +119,12 @@ const getAllFaculty = combineResolvers(isAuthenticatedAdmin,
                     { path: 'class', select: 'className' },
                     { path: 'subject', select: 'subjectName subjectCode' },
                     { path: 'createdBy', select: '_id firstName role' },
-                    { path: 'updatedBy', select: '_id firstName role' }
-                ]);
+                    { path: 'updatedBy', select: '_id firstName role' },
+                ])
+                .populate([
+                    { path: 'createdBy', populate: { path: 'role', select: 'roleName' } },
+                    { path: 'updatedBy', populate: { path: 'role', select: 'roleName' } }
+                ])
             if (!getAllFaculty) return new Error("getting error in finding all faculty")
             console.log(getAllFaculty);
             return getAllFaculty
