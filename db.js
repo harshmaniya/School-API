@@ -14,7 +14,7 @@ const mongoConnection = () => {
                     rolesToInsert.pop(data.roleName)
                 }
             })
-            
+
             if (isRoleExist.length !== 3) {
                 let isRoleCreated = true;
                 let adminRoleId;
@@ -36,18 +36,21 @@ const mongoConnection = () => {
                 await Promise.all(rolePromises);
 
                 if (isRoleCreated) {
-                    User.create({
-                        firstName: 'admin',
-                        email: 'admin@gmail.com',
-                        role: adminRoleId,
-                        password: 'admin',
-                    })
-                        .then(res => {
-                            console.log("email: ", res.email, " password: admin");
+                    const isAdminExist = await User.findOne({ email: 'admin@gmail.com', isDeleted: false });
+                    if (!isAdminExist) {
+                        User.create({
+                            firstName: 'admin',
+                            email: 'admin@gmail.com',
+                            role: adminRoleId,
+                            password: 'admin',
                         })
-                        .catch(error => {
-                            console.log(error.message);
-                        });
+                            .then(res => {
+                                console.log("email: ", res.email, " password: admin");
+                            })
+                            .catch(error => {
+                                console.log(error.message);
+                            });
+                    }
                 }
             }
 
