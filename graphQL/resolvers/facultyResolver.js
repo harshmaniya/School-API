@@ -11,6 +11,14 @@ const createFaculty = combineResolvers(isAuthenticatedAdmin,
             console.log(isExist);
             if (isExist.length > 0) return new Error("email already exist")
 
+            input.role = await getRoleId('faculty')
+
+            const isAssignedClass = await User.find({ class: input.class, role: input.role, isDeleted: false })
+            if (isAssignedClass.length > 0) return new Error("given class is already assigned to another faculty! please select different one");
+
+            const isAssignedSubject = await User.find({ subject: input.subject, isDeleted: false })
+            if (isAssignedSubject.length > 0) return new Error("given subject is already assigned to another faculty! please select different one");
+
             input.createdBy = user._id
             console.log(input);
             input.role = await getRoleId('faculty')
@@ -19,6 +27,7 @@ const createFaculty = combineResolvers(isAuthenticatedAdmin,
             if (!newFaculty) return new Error("faculty not created")
             console.log(newFaculty);
             return newFaculty
+
         } catch (error) {
             console.log(error.message);
             return new Error(error.message)
@@ -29,13 +38,30 @@ const createFaculty = combineResolvers(isAuthenticatedAdmin,
 const updateFaculty = combineResolvers(isAuthenticatedAdmin,
     async (_, { _id, input }, user) => {
         try {
+
+            input.role = await getRoleId('faculty')
+
+            if (input.class) {
+                const isAssignedClass = await User.find({ class: input.class, role: input.role, isDeleted: false })
+                if (isAssignedClass.length > 0) return new Error("given class is already assigned to another faculty! please select different one");
+            }
+
+            if (input.subject) {
+                const isAssignedSubject = await User.find({ subject: input.subject, isDeleted: false })
+                if (isAssignedSubject.length > 0) return new Error("given subject is already assigned to another faculty! please select different one");
+            }
+
             input.updatedBy = user._id
+
             const updateFaculty = await User.findOne({ _id, isDeleted: false })
             if (!updateFaculty) return new Error("faculty not found")
-            console.log(updateFaculty);
+
+
             Object.assign(updateFaculty, input);
             await updateFaculty.save();
             if (!updateFaculty) return new Error("getting error in faculty update!")
+
+            console.log(updateFaculty);
             return updateFaculty
         } catch (error) {
             console.log(error.message);
@@ -66,16 +92,14 @@ const getFaculty = combineResolvers(isAuthenticatedAdmin,
                 .populate([
                     { path: 'role', select: 'roleName' },
                     { path: 'class', select: 'className' },
-                    { path: 'subject', select: 'subjectName' },
+                    { path: 'subject', select: 'subjectName subjectCode' },
                     { path: 'createdBy', select: '_id firstName role' },
                     { path: 'updatedBy', select: '_id firstName role' },
-                    { path: 'createdBy.role', model: 'role', select: 'roleName' },
-                    { path: 'updatedBy.role', model: 'role', select: 'roleName' }
                 ])
-            // .populate([
-            //     { path: 'createdBy.role', select: 'roleName' },
-            //     { path: 'updatedBy.role', select: 'roleName' }
-            // ]);
+                .populate([
+                    { path: 'createdBy', populate: { path: 'role', select: 'roleName' } },
+                    { path: 'updatedBy', populate: { path: 'role', select: 'roleName' } }
+                ])
             if (!getFaculty) return new Error("getting error in finding faculty")
             console.log(getFaculty);
             return getFaculty

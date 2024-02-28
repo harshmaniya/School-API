@@ -36,8 +36,13 @@ const updateSubject = combineResolvers(isAuthenticatedAdmin,
 const deleteSubject = combineResolvers(isAuthenticatedAdmin,
     async (_, { _id }) => {
         try {
+
+            const isAssigned = await User.find({ subject: _id, isDeleted: false })
+            if(isAssigned.length > 0) return new Error("subject is assigned to faculty!")
+            
             const subject = await Subject.findOneAndUpdate({ _id, isDeleted: false }, { isDeleted: true })
             if (!subject) return new Error("Subject not deleted")
+
             return subject
         } catch (error) {
             console.log(error.message);
@@ -58,6 +63,7 @@ const getSubject = combineResolvers(isAuthenticatedAdmin,
         }
     })
 
+// done
 const getAllSubject = combineResolvers(isAuthenticatedAdmin,
     async () => {
         try {

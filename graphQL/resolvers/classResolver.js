@@ -1,5 +1,5 @@
 const { isAuthenticatedAdmin } = require('../../utils')
-const { Class } = require('../../models')
+const { Class, User } = require('../../models')
 const { combineResolvers } = require('graphql-resolvers')
 
 // done
@@ -41,6 +41,9 @@ const deleteClass = combineResolvers(isAuthenticatedAdmin,
         try {
             const { _id } = args
 
+            const isAssigned = await User.find({ class: _id, isDeleted: false })
+            if(isAssigned.length > 0) return new Error("class is assigned to student or faculty")
+
             const deleteClass = await Class.findOneAndUpdate({ _id, isDeleted: false }, { isDeleted: true })
             if (!deleteClass) return new Error("getting error in class delete")
             console.log(deleteClass);
@@ -58,7 +61,7 @@ const getClass = combineResolvers(isAuthenticatedAdmin,
         try {
             const { _id } = args
 
-            const getClass = await Class.findOne({ _id , isDeleted: false })
+            const getClass = await Class.findOne({ _id, isDeleted: false })
             if (!getClass) return new Error("getting error in finding class")
             console.log(getClass);
             return getClass
