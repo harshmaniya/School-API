@@ -54,7 +54,7 @@ const deleteSubject = combineResolvers(isAuthenticatedAdmin,
 const getSubject = combineResolvers(isAuthenticatedAdmin,
     async (_, { _id }) => {
         try {
-            const subject = await Subject.findById({ _id, isDeleted: false })
+            const subject = await Subject.findOne({ _id, isDeleted: false })
             if (!subject) return new Error("Subject not found")
             return subject
         } catch (error) {

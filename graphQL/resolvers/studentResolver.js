@@ -6,9 +6,9 @@ const { combineResolvers } = require('graphql-resolvers')
 const createStudent = combineResolvers(isAuthenticatedFaculty,
     async (_, { input }, user) => {
         try {
-            const isExist = await User.find({ email: input.email, isDeleted: false })
+            const isExist = await User.findOne({ email: input.email, isDeleted: false })
             console.log(isExist);
-            if (isExist.length > 0) return new Error("email already exist")
+            if (isExist) return new Error("email already exist")
 
             input.createdBy = user._id
             input.role = await getRoleId('student')
@@ -65,7 +65,7 @@ const getStudent = combineResolvers(isAuthenticatedFaculty,
                 .populate([
                     { path: 'role', select: 'roleName' },
                     { path: 'class', select: 'className' },
-                    { path: 'createdBy', select: '_id firstName role' },
+                    { path: 'createdBy', select: '_id firstName role'  },
                     { path: 'updatedBy', select: '_id firstName role' },
                 ])
                 .populate([

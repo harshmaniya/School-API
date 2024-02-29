@@ -111,7 +111,7 @@ const getToppersBasedOnClass = combineResolvers(isAuthenticatedAdmin,
                             $slice: ["$studentData", 3],
                         },
                     }
-                },
+                },                
                 {
                     $sort: {
                         class: 1

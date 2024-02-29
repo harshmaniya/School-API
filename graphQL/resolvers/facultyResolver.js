@@ -7,9 +7,9 @@ const createFaculty = combineResolvers(isAuthenticatedAdmin,
     async (_, args, user) => {
         try {
             const { input } = args
-            const isExist = await User.find({ email: input.email, isDeleted: false })
+            const isExist = await User.findOne({ email: input.email, isDeleted: false })
             console.log(isExist);
-            if (isExist.length > 0) return new Error("email already exist")
+            if (isExist) return new Error("email already exist")
 
             input.role = await getRoleId('faculty')
 

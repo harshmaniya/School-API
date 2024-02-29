@@ -1,3 +1,4 @@
+const { default: mongoose } = require('mongoose');
 const { Result, User, Subject, Class } = require('../../models')
 const { isAuthenticatedFaculty } = require('../../utils')
 const { combineResolvers } = require('graphql-resolvers')
@@ -66,11 +67,11 @@ const createResult = combineResolvers(isAuthenticatedFaculty,
     }
 );
 
-// done
+// done --- forEach
 const updateResult = combineResolvers(isAuthenticatedFaculty,
     async (_, { _id, input }) => {
         try {
-            const isResultExist = await Result.findOne({ _id, isDeleted: false })
+            const isResultExist = await Result.findOne({ _id, isDeleted: false });
             if (!isResultExist) {
                 throw new Error("Given student's result is not exist!");
             }
@@ -94,8 +95,7 @@ const updateResult = combineResolvers(isAuthenticatedFaculty,
                     try {
                         const subjectIsExist = await Subject.findOne({ _id: score.subject, isDeleted: false });
                         if (!subjectIsExist) {
-                            const subjectName = await Subject.findOne({ _id: score.subject, isDeleted: false });
-                            throw new Error(`Subject with ID ${subjectName} not found`);
+                            throw new Error(`Subject with ID ${score.subject} not found`);
                         }
                     } catch (error) {
                         console.error(`Error finding subject: ${error.message}`);
@@ -104,19 +104,34 @@ const updateResult = combineResolvers(isAuthenticatedFaculty,
                 }
             };
 
-            await processScores(input.scores);           
+            await processScores(input.scores);
 
-            const updateResult = await Result.findOneAndUpdate({ _id, isDeleted: false }, { input }, { new: true })
+            const updateResult = await Result.findOne({ _id, isDeleted: false });
+            if (!updateResult) return new Error("Getting error in result update!");
 
-            if (!updateResult) return new Error("getting error in result update!")
-            console.log(updateResult);
-            console.log("updateResult--------------:", updateResult.scores);
-            return { message: "Result updated successfully!" }
+            input.scores.forEach((secondItem) => {
+                const matchingItemIndex = updateResult.scores.findIndex((firstItem) => firstItem.subject.toString() === secondItem.subject.toString());                
+                if (matchingItemIndex !== -1) {                   
+                    updateResult.scores[matchingItemIndex].marksObtained = secondItem.marksObtained;
+                    updateResult.scores[matchingItemIndex].total = secondItem.total;
+                } else {                 
+                    updateResult.scores.push({
+                        marksObtained: secondItem.marksObtained,
+                        subject: secondItem.subject,
+                        total: secondItem.total
+                    });
+                }
+            });
+
+
+            await updateResult.save();
+            console.log("🚀 ~ updateResult.scores:", updateResult.scores);
+            return { message: "Result updated successfully!" };
         } catch (error) {
             console.log(error.message);
-            return new Error(error.message)
+            return new Error(error.message);
         }
-    })
+    });
 
 // done
 const deleteResult = combineResolvers(isAuthenticatedFaculty,
